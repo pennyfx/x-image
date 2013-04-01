@@ -1,3 +1,13 @@
+/*
+
+I have a custom element repo stub that you can use when creating new 
+elements.  It saves on the basic setup.
+
+https://github.com/x-tag/web-component-stub
+
+*/
+
+
 xtag.register('x-image', {
 	lifecycle: {
 	  created: function(){
@@ -16,8 +26,17 @@ xtag.register('x-image', {
 
 	    // Create IMG element, send it off
 	    var image = this.image = document.createElement('img');
+
+	    // You can cache a handle to this element by using the xtag data object
+	    this.xtag.data.image = image;
+
 	    image.addEventListener('load', hideLoader);
+
+	    // this needs some sort of visual indicator when an image failed to load.
 	    image.addEventListener('error', hideLoader);
+
+	    // It looks like getters/setters already exist for the other attributes, why copy all of them down?
+	    
 	    xtag.toArray(this.attributes).forEach(function(item) {
 	      if(item.name != 'id') image.setAttribute(item.name, item.value);
 	    });
@@ -27,6 +46,8 @@ xtag.register('x-image', {
 	      	self.hideLoader();
 	    }
 	  },
+
+	  // You can axe this since you have getters and setters for the relavent attributes
 	  attributeChanged: function(name, value) {
 	  	// If the SRC changes, we need to show the loader right away
 	    if(name == 'src') this.showLoader();
@@ -39,26 +60,30 @@ xtag.register('x-image', {
 	    get: function() {
 	      return this.getAttribute('src');
 	    },
-	    set: function(value) {
-	      // Show the overlay
+	    // We have an 'attribute' pseudo that will do the attribute setting on the x-element for you
+	    // you'll still need to relay other attributes to the img element  
+	    'set:attribute()': function(value) {	      
 	      this.showLoader();
-	      return value ? this.setAttribute('src', value) : this.removeAttribute('src');
+	      // relay to image element
+	      this.xtag.data.image.src = value;
 	    }
 	  },
 	  width: {
 	    get: function() {
 	      return this.getAttribute('width');
 	    },
-	    set: function(value) {
-	      return value ? this.setAttribute('width', value) : this.removeAttribute('width');
+	    // Use attribute pseudo
+	    'set:attribute()': function(value) {
+	      this.xtag.data.image.setAttribute('width', value);
 	    }
 	  },
 	  height: {
 	    get: function() {
 	      return this.getAttribute('height');
 	    },
-	    set: function(value) {
-	      return value ? this.setAttribute('height', value) : this.removeAttribute('height');
+	    // Use attribute pseudo
+	    'set:attribute()': function(value) {	      
+	      this.xtag.data.image.setAttribute('height', value);
 	    }
 	  }
 	},
